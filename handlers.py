@@ -7,7 +7,7 @@ from request import fetch_data, check_candle_pattern
 from pairs import pairs
 import keyboards as kb
 import time
-
+from database.request_db import create_trade_signal
 monitoring_active = False
 router = Router()
 import logging
@@ -53,6 +53,14 @@ async def monitor(message):
             if ohlcv and result:
                 binance_symbol = symbol.replace('/', '_')
                 binance_link = f"https://www.binance.com/ru/trade/{binance_symbol}?type=spot"
+                # Получаем данные из CoinMarketCap
+                market_cap = 0  # Здесь нужно будет добавить вызов к API CoinMarketCap для получения данных
+                rank = 0  # Здесь нужно будет добавить вызов к API CoinMarketCap для получения данных
+                entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
+
+                # Создаем объект TradeSignal
+                await create_trade_signal(symbol, entry_price, market_cap, rank)
+
                 logging.info(f"Отправляем уведомление для {symbol}")
                 await message.answer(
                     f"🚨 Уведомление: у {symbol} обнаружено {result} подряд красных свечей!\n"

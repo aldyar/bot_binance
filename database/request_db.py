@@ -1,5 +1,5 @@
-from app.database.models import async_session
-from app.database.models import User, AiType, AiModel, Order
+from database.models import async_session
+from database.models import TradeSignal
 from sqlalchemy import select, update, delete, desc
 from decimal import Decimal
 from datetime import datetime
@@ -21,4 +21,25 @@ async def set_user(session, tg_id):
         await session.commit()
 
 
-@
+@connection
+async def create_trade_signal(session, symbol, entry_price, market_cap, rank):
+    # Получаем текущий день недели
+    day_of_week = datetime.now().strftime('%A')
+    
+    # Создаем объект TradeSignal
+    trade_signal = TradeSignal(
+        symbol=symbol,
+        date=datetime.now().date(),
+        entry_price=entry_price,
+        exit_price=0.0,  # Пока что 0
+        market_cap=market_cap,
+        rank=rank,
+        volume_24h=0.0,  # Пока что 0
+        day_of_week=day_of_week
+    )
+    
+    # Добавляем в сессию и коммитим
+    session.add(trade_signal)
+    await session.commit()
+
+

@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO)
 # Инициализация клиента Binance
 exchange = ccxt.binance()
 
-async def fetch_data(symbol: str, timeframe: str = '1h', limit: int = 20):
+async def fetch_data(symbol: str, timeframe: str = '5m', limit: int = 20):
     """
     Получает данные свечей (OHLCV) для указанного символа.
     """
