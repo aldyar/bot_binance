@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 #from monitoring import monitor  # Импортируем функцию мониторинга
 import asyncio
-from request import fetch_data, check_candle_pattern
+from request import fetch_data, check_candle_pattern, get_cmc_info, get_volume_24h
 from pairs import pairs
 import keyboards as kb
 import time
@@ -54,12 +54,14 @@ async def monitor(message):
                 binance_symbol = symbol.replace('/', '_')
                 binance_link = f"https://www.binance.com/ru/trade/{binance_symbol}?type=spot"
                 # Получаем данные из CoinMarketCap
-                market_cap = 0  # Здесь нужно будет добавить вызов к API CoinMarketCap для получения данных
-                rank = 0  # Здесь нужно будет добавить вызов к API CoinMarketCap для получения данных
-                entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
 
+                entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
+                volume = await get_volume_24h(binance_symbol)
+
+                filtered_pair = binance_symbol.split("/")[0]
+                cmc_info = await get_cmc_info(filtered_pair)
                 # Создаем объект TradeSignal
-                await create_trade_signal(symbol, entry_price, market_cap, rank)
+                await create_trade_signal(symbol, entry_price, cmc_info['market_cap'], cmc_info['rank'], volume)
 
                 logging.info(f"Отправляем уведомление для {symbol}")
                 await message.answer(
@@ -71,4 +73,11 @@ async def monitor(message):
         logging.info(f"Функция monitor заняла {elapsed_time:.2f} секунд")
         await asyncio.sleep(14400)  # Интервал проверки (14400 секунд)
 
-
+@router.message(F.text == 'test')
+async def test(message: Message):
+    binance_symbol = 'TWT/USDT'
+    ohlcv = await fetch_data('TWT/USDT')
+    entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
+    volume = await get_volume_24h(binance_symbol)
+    cmc_info = await get_cmc_info('TWT')
+    await create_trade_signal(binance_symbol, entry_price, cmc_info['market_cap'], cmc_info['rank'], volume)

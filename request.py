@@ -1,12 +1,15 @@
 import ccxt
 import logging
+from config import CMC_TOKEN
+import requests
+
 
 logging.basicConfig(level=logging.INFO)
 
 # Инициализация клиента Binance
 exchange = ccxt.binance()
 
-async def fetch_data(symbol: str, timeframe: str = '5m', limit: int = 20):
+async def fetch_data(symbol: str, timeframe: str = '1m', limit: int = 20):
     """
     Получает данные свечей (OHLCV) для указанного символа.
     """
@@ -63,3 +66,37 @@ def check_candle_pattern(ohlcv):
         return red_count
     else:
         return False
+
+
+async def get_volume_24h(symbol):
+    ticker = exchange.fetch_ticker(symbol)
+    volume_24h = ticker['quoteVolume']
+
+    return volume_24h
+
+
+async def get_cmc_info(symbol: str) -> dict:
+    """
+    Получает ранг и капитализацию указанной криптовалюты.
+
+    :param symbol: Символ криптовалюты (например, 'TWT')
+    :param api_key: API-ключ CoinMarketCap
+    :return: Словарь с рангом и капитализацией
+    """
+    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
+    headers = {"X-CMC_PRO_API_KEY": CMC_TOKEN}
+    params = {"symbol": symbol}
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        data = response.json()
+
+        crypto_data = data["data"][symbol]
+        rank = crypto_data["cmc_rank"]
+        market_cap = crypto_data["quote"]["USD"]["market_cap"]
+
+        return {"rank": rank, "market_cap": market_cap}
+
+    except Exception as e:
+        print(f"Ошибка при получении данных: {e}")
+        return {"rank": None, "market_cap": None}

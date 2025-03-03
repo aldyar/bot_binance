@@ -10,19 +10,17 @@ def connection(func):
             return await func(session, *args, **kwargs)
     return inner
 
-
+days_mapping = {
+    "Monday": "Понедельник",
+    "Tuesday": "Вторник",
+    "Wednesday": "Среда",
+    "Thursday": "Четверг",
+    "Friday": "Пятница",
+    "Saturday": "Суббота",
+    "Sunday": "Воскресенье"
+}
 @connection
-async def set_user(session, tg_id):
-    #async with async_session() as session:
-    user = await session.scalar(select(User).where(User.tg_id == tg_id))
-
-    if not user:
-        session.add(User(tg_id=tg_id, balance='0.05'))
-        await session.commit()
-
-
-@connection
-async def create_trade_signal(session, symbol, entry_price, market_cap, rank):
+async def create_trade_signal(session, symbol, entry_price, market_cap, rank, volume):
     # Получаем текущий день недели
     day_of_week = datetime.now().strftime('%A')
     
@@ -34,8 +32,9 @@ async def create_trade_signal(session, symbol, entry_price, market_cap, rank):
         exit_price=0.0,  # Пока что 0
         market_cap=market_cap,
         rank=rank,
-        volume_24h=0.0,  # Пока что 0
-        day_of_week=day_of_week
+        volume_24h=volume,  # Пока что 0
+        day_of_week = days_mapping[datetime.now().strftime('%A')]
+
     )
     
     # Добавляем в сессию и коммитим
