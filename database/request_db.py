@@ -21,13 +21,11 @@ days_mapping = {
 }
 @connection
 async def create_trade_signal(session, symbol, entry_price, market_cap, rank, volume):
-    # Получаем текущий день недели
-    day_of_week = datetime.now().strftime('%A')
     
     # Создаем объект TradeSignal
     trade_signal = TradeSignal(
         symbol=symbol,
-        date=datetime.now().date(),
+        #date=datetime.now().date(),
         entry_price=entry_price,
         exit_price=0.0,  # Пока что 0
         market_cap=market_cap,

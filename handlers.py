@@ -56,9 +56,9 @@ async def monitor(message):
                 # Получаем данные из CoinMarketCap
 
                 entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
-                volume = await get_volume_24h(binance_symbol)
+                volume = await get_volume_24h(symbol)
 
-                filtered_pair = binance_symbol.split("/")[0]
+                filtered_pair = symbol.split("/")[0]
                 cmc_info = await get_cmc_info(filtered_pair)
                 # Создаем объект TradeSignal
                 await create_trade_signal(symbol, entry_price, cmc_info['market_cap'], cmc_info['rank'], volume)
@@ -71,7 +71,8 @@ async def monitor(message):
                 )
         elapsed_time = time.time() - start_time
         logging.info(f"Функция monitor заняла {elapsed_time:.2f} секунд")
-        await asyncio.sleep(14400)  # Интервал проверки (14400 секунд)
+        await asyncio.sleep(150)  # Интервал проверки (14400 секунд)
+
 
 @router.message(F.text == 'test')
 async def test(message: Message):

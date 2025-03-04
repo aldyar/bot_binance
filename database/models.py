@@ -21,7 +21,7 @@ class TradeSignal(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     symbol: Mapped[str] = mapped_column(String, nullable=False)  # 1. Символ криптовалюты
-    date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)  # 2. Дата (не Unix)
+    date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow().replace(microsecond=0))  # 2. Дата (не Unix)
     entry_price: Mapped[float] = mapped_column(Float)  # 3. Точка входа (значение с запятой)
     exit_price: Mapped[float] = mapped_column(Float)  # 4. Точка выхода (значение с запятой)
     market_cap: Mapped[float] = mapped_column(Float)  # 5. Капитализация монеты (значение с запятой)
