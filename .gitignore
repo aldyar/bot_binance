@@ -1,5 +1,6 @@
 __pycache__/
 .venv/
 config.py
-reg.sqlite3
+req.sqlite3
+
 
