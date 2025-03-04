@@ -24,10 +24,10 @@ class TradeSignal(Base):
     date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow().replace(microsecond=0))  # 2. Дата (не Unix)
     entry_price: Mapped[float] = mapped_column(Float)  # 3. Точка входа (значение с запятой)
     exit_price: Mapped[float] = mapped_column(Float)  # 4. Точка выхода (значение с запятой)
-    market_cap: Mapped[float] = mapped_column(Float)  # 5. Капитализация монеты (значение с запятой)
+    market_cap: Mapped[int] = mapped_column(Integer)  # 5. Капитализация монеты (значение с запятой)
     rank: Mapped[int] = mapped_column(Integer)  # 6. Место в рейтинге
     status: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # 7. Статус сделки (NULL по умолчанию)
-    volume_24h: Mapped[float] = mapped_column(Float)  # 8. Объем торгов за 24 часа (значение с запятой)
+    volume_24h: Mapped[int] = mapped_column(Integer)  # 8. Объем торгов за 24 часа (значение с запятой)
     day_of_week: Mapped[str] = mapped_column(String)  # 9. День недели
     holding_time: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 10. Время удержания сделки (NULL по умолчанию)
     

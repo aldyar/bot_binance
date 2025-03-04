@@ -20,17 +20,18 @@ days_mapping = {
     "Sunday": "Воскресенье"
 }
 @connection
-async def create_trade_signal(session, symbol, entry_price, market_cap, rank, volume):
+async def create_trade_signal(session, symbol, entry_price,test, market_cap, rank, volume):
     
     # Создаем объект TradeSignal
     trade_signal = TradeSignal(
         symbol=symbol,
         #date=datetime.now().date(),
         entry_price=entry_price,
-        exit_price=0.0,  # Пока что 0
-        market_cap=market_cap,
+        exit_price=test, 
+        market_cap = int(market_cap),
         rank=rank,
-        volume_24h=volume,  # Пока что 0
+        status = 'open',
+        volume_24h=int(volume),  
         day_of_week = days_mapping[datetime.now().strftime('%A')]
 
     )

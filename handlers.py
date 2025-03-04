@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 #from monitoring import monitor  # Импортируем функцию мониторинга
 import asyncio
-from request import fetch_data, check_candle_pattern, get_cmc_info, get_volume_24h
+from request import fetch_data, check_candle_pattern, get_cmc_info, get_volume_24h, find_fibonacci_high
 from pairs import pairs
 import keyboards as kb
 import time
@@ -57,7 +57,7 @@ async def monitor(message):
 
                 entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
                 volume = await get_volume_24h(symbol)
-
+                
                 filtered_pair = symbol.split("/")[0]
                 cmc_info = await get_cmc_info(filtered_pair)
                 # Создаем объект TradeSignal
@@ -81,4 +81,5 @@ async def test(message: Message):
     entry_price = ohlcv[-1][4]  # Используем цену закрытия последней свечи как цену входа
     volume = await get_volume_24h(binance_symbol)
     cmc_info = await get_cmc_info('TWT')
-    await create_trade_signal(binance_symbol, entry_price, cmc_info['market_cap'], cmc_info['rank'], volume)
+    test = await find_fibonacci_high(ohlcv)
+    await create_trade_signal(binance_symbol, entry_price,test, cmc_info['market_cap'], cmc_info['rank'], volume)

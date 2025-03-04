@@ -100,3 +100,44 @@ async def get_cmc_info(symbol: str) -> dict:
     except Exception as e:
         print(f"Ошибка при получении данных: {e}")
         return {"rank": None, "market_cap": None}
+    
+
+
+async def find_fibonacci_high(ohlcv):
+    """
+    Находит самую высокую зелёную свечу, а затем проверяет, есть ли после неё красная свеча.
+    Если да — возвращает цену закрытия этой зелёной свечи.
+    """
+
+    green_candles = []  # Список всех зелёных свечей (индекс, хай, закрытие)
+
+    print("\nНачинаем анализ свечей...\n")
+
+    # 1. Собираем все зелёные свечи
+    for i in range(len(ohlcv) - 1):  # Не включаем последнюю свечу, так как после неё не с чем сравнивать
+        open_price, high, low, close, _ = ohlcv[i][1:6]
+        
+        if close > open_price:  # Это зелёная свеча
+            print(f"Зелёная свеча {i}: Открытие={open_price}, Хай={high}, Закрытие={close}")
+            green_candles.append((i, high, close))  # Сохраняем индекс, high и close
+
+    # 2. Если не нашли ни одной зелёной свечи — выход
+    if not green_candles:
+        print("Не найдено ни одной зелёной свечи")
+        return None
+
+    # 3. Находим самую высокую зелёную свечу и проверяем, есть ли после неё красная
+    green_candles.sort(key=lambda x: x[1], reverse=True)  # Сортируем по high (по убыванию)
+
+    for index, high, close in green_candles:
+        if index + 1 < len(ohlcv):  # Проверяем, что есть следующая свеча
+            next_open, next_close = ohlcv[index + 1][1], ohlcv[index + 1][4]
+            print(f"Проверяем свечу {index + 1}: Открытие={next_open}, Закрытие={next_close}")
+
+            if next_close < next_open:  # Если следующая свеча красная
+                print(f"Красная свеча найдена после зелёной на индексе {index + 1}")
+                print(f"Возвращаем закрытие самой высокой зелёной свечи: {close}")
+                return close  # Возвращаем закрытие найденной свечи
+
+    print("Нет зелёной свечи, после которой идёт красная")
+    return None
